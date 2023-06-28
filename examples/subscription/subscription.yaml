@@ -1,0 +1,12 @@
+apiVersion: subscription.spotinst.upbound.io/v1alpha1
+kind: Subscription
+metadata:
+  name: hello-crossplane
+spec:
+  forProvider:
+    resourceId: o-f09e51bc
+    eventType: OCEAN_K8S_NODE_REMOVED
+    protocol: email
+    endpoint: sharad.kesarwani@netapp.com
+  providerConfigRef:
+    name: default

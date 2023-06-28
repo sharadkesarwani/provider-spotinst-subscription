@@ -15,7 +15,7 @@ import (
 
 	"github.com/upbound/upjet/pkg/terraform"
 
-	"github.com/upbound/upjet-provider-template/apis/v1beta1"
+	"github.com/spotinst/provider-spotinst/apis/v1beta1"
 )
 
 const (
@@ -24,7 +24,9 @@ const (
 	errGetProviderConfig    = "cannot get referenced ProviderConfig"
 	errTrackUsage           = "cannot track ProviderConfig usage"
 	errExtractCredentials   = "cannot extract credentials"
-	errUnmarshalCredentials = "cannot unmarshal template credentials as JSON"
+	errUnmarshalCredentials = "cannot unmarshal spotinst credentials as JSON"
+	keyToken                = "spottoken"
+	keyAccount              = "act-7c46c6df"
 )
 
 // TerraformSetupBuilder builds Terraform a terraform.SetupFn function which
@@ -67,6 +69,15 @@ func TerraformSetupBuilder(version, providerSource, providerVersion string) terr
 			"username": creds["username"],
 			"password": creds["password"],
 		}*/
+		// set provider configuration
+		ps.Configuration = map[string]any{}
+		if v, ok := creds[keyToken]; ok {
+			ps.Configuration[keyToken] = v
+		}
+		if v, ok := creds[keyAccount]; ok {
+			ps.Configuration[keyAccount] = v
+		}
+
 		return ps, nil
 	}
 }

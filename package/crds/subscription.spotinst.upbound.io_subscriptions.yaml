@@ -5,18 +5,18 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.11.3
   creationTimestamp: null
-  name: resources.null.template.upbound.io
+  name: subscriptions.subscription.spotinst.upbound.io
 spec:
-  group: null.template.upbound.io
+  group: subscription.spotinst.upbound.io
   names:
     categories:
     - crossplane
     - managed
-    - template
-    kind: Resource
-    listKind: ResourceList
-    plural: resources
-    singular: resource
+    - spotinst
+    kind: Subscription
+    listKind: SubscriptionList
+    plural: subscriptions
+    singular: subscription
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -35,7 +35,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Resource is the Schema for the Resources API. <no value>
+        description: Subscription is the Schema for the Subscriptions API. <no value>
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -50,7 +50,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: ResourceSpec defines the desired state of Resource
+            description: SubscriptionSpec defines the desired state of Subscription
             properties:
               deletionPolicy:
                 default: Delete
@@ -67,13 +67,18 @@ spec:
                 type: string
               forProvider:
                 properties:
-                  triggers:
+                  endpoint:
+                    type: string
+                  eventType:
+                    type: string
+                  format:
                     additionalProperties:
                       type: string
-                    description: A map of arbitrary strings that, when changed, will
-                      force the null resource to be replaced, re-running any associated
-                      provisioners.
                     type: object
+                  protocol:
+                    type: string
+                  resourceId:
+                    type: string
                 type: object
               managementPolicy:
                 default: FullControl
@@ -261,20 +266,34 @@ spec:
             required:
             - forProvider
             type: object
+            x-kubernetes-validations:
+            - message: endpoint is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.endpoint)
+            - message: eventType is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.eventType)
+            - message: protocol is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.protocol)
+            - message: resourceId is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.resourceId)
           status:
-            description: ResourceStatus defines the observed state of Resource.
+            description: SubscriptionStatus defines the observed state of Subscription.
             properties:
               atProvider:
                 properties:
-                  id:
+                  endpoint:
                     type: string
-                  triggers:
+                  eventType:
+                    type: string
+                  format:
                     additionalProperties:
                       type: string
-                    description: A map of arbitrary strings that, when changed, will
-                      force the null resource to be replaced, re-running any associated
-                      provisioners.
                     type: object
+                  id:
+                    type: string
+                  protocol:
+                    type: string
+                  resourceId:
+                    type: string
                 type: object
               conditions:
                 description: Conditions of the resource.
